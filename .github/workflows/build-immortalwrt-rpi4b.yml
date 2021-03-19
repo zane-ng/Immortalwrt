@@ -20,7 +20,7 @@ on:
     branches:
       - main
     paths:
-      - '.config'
+      - '.config.rpi4b'
 
 #  schedule:
 #    - cron: 0 8 * * 5

@@ -32,7 +32,7 @@ env:
   FEEDS_CONF: feeds.conf.default
   PATCH_PATH: patch
   CONFIG_FILE: .config.rpi4b
-  CUSTOM_CONFIG: customize.sh
+  CUSTOM_CONFIG: scripts/customize-config.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true

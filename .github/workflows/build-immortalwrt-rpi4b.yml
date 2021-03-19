@@ -28,14 +28,11 @@ on:
 #    types: started
 
 env:
-  REPO_OP: https://github.com/openwrt/openwrt.git
-  REPO_LEDE: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: v19.07.4
+  REPO_OP: https://github.com/immortalwrt/immortalwrt
   FEEDS_CONF: feeds.conf.default
   PATCH_PATH: patch
-  CONFIG_FILE: .config
+  CONFIG_FILE: .config.rpi4b
   CUSTOM_CONFIG: customize.sh
-  #SSH_ACTIONS: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -67,35 +64,12 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone $REPO_OP -b $REPO_BRANCH openwrt
-        git clone $REPO_LEDE -b master lede
+        git clone $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        ln -sf /workdir/lede $GITHUB_WORKSPACE/lede
-        cd /workdir/openwrt/package
-        git clone https://github.com/liuran001/openwrt-packages
-        git clone https://github.com/pymumu/luci-app-smartdns
-        sed -i 's/include \.\.\/\.\.\/luci\.mk/include \$\(TOPDIR\)\/feeds\/luci\/luci\.mk/g' luci-app-smartdns/Makefile
-
-    - name: Load custom feeds
-      run: |
-        cd /workdir
-        # add other feeds here
-
-    - name: Update feeds
-      run: cd /workdir/lede && ./scripts/feeds update -a && cd /workdir/openwrt && ./scripts/feeds update -a
-        
+    
     - name: Install feeds
       run: cd /workdir/lede && ./scripts/feeds install -a && cd /workdir/openwrt && ./scripts/feeds install -a
 
-    - name: Fix compile issue
-      run: |
-        cd /workdir/openwrt/staging_dir/host/bin
-        ln -s /usr/bin/upx upx
-        ln -s /usr/bin/upx-ucl upx-ucl
-        ls -l upx*
-        rm -rf /workdir/openwrt/feeds/packages/lang/golang
-        cp -r /workdir/lede/feeds/packages/lang/golang /workdir/openwrt/feeds/packages/lang/golang
-                
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
@@ -103,13 +77,7 @@ jobs:
         chmod +x $CUSTOM_CONFIG
         cd openwrt
         $GITHUB_WORKSPACE/$CUSTOM_CONFIG
-        echo 'Force to enable WIFI'
-        sed -i 's/set wireless.radio\${devidx}.disabled=1/set wireless.radio\${devidx}.disabled=0/g' /workdir/openwrt/package/kernel/mac80211/files/lib/wifi/mac80211.sh
         
-    #- name: SSH connection to Actions
-    #  uses: P3TERX/debugger-action@main
-    #  if: env.SSH_ACTIONS == 'true' || contains(github.event.action, 'ssh')
-
     - name: Download package
       id: package
       run: |

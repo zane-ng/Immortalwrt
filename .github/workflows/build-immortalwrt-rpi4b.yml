@@ -9,7 +9,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build OpenWrt
+name: Build immortalwrt for Raspberry Pi 4b
 
 on:
   repository_dispatch:
@@ -68,7 +68,11 @@ jobs:
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
     
     - name: Install feeds
-      run: cd /workdir/lede && ./scripts/feeds install -a && cd /workdir/openwrt && ./scripts/feeds install -a
+      run: |
+        cd /workdir/openwrt
+        ./scripts/feeds clean
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
 
     - name: Load custom configuration
       run: |

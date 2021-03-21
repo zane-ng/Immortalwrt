@@ -65,8 +65,10 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone $REPO_OP -b $REPO_BRANCH openwrt
+        git clone $REPO_OP openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        cd openwrt
+        git checkout $REPO_BRANCH
     
     - name: Install feeds
       run: |
